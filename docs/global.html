@@ -14,6 +14,7 @@
     <link type="text/css" rel="stylesheet" href="styles/prettify.css">
     <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
     <script src="scripts/nav.js" defer></script>
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
@@ -27,7 +28,9 @@
 
 <nav >
     
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#readCsv">readCsv</a></li><li><a href="global.html#WDataCsv">WDataCsv</a></li><li><a href="global.html#writeCsv">writeCsv</a></li></ul>
+    
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#WDataCsv">WDataCsv</a></li><li><a href="global.html#readCsv">readCsv</a></li><li><a href="global.html#writeCsv">writeCsv</a></li></ul>
+    
 </nav>
 
 <div id="main">
@@ -46,6 +49,8 @@
     
         <h2>
         
+            
+        
         </h2>
         
     
@@ -58,6 +63,7 @@
             
 
 <dl class="details">
+    
 
     
 
@@ -126,6 +132,10 @@
 
 
 <dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>讀寫CSV檔</p></li></ul></dd>
+    
 
     
     <dt class="tag-source">Source:</dt>
@@ -179,7 +189,7 @@
 
 
 
-    <h5>Example</h5>
+    <h5 class="h5-examples">Example</h5>
     
     <pre class="prettyprint"><code>import wdc from './src/WDataCsv.mjs'let fpIn = './g-test-in.csv'wdc.readCsv(fpIn)    .then((ltdtIn) => {        console.log(ltdtIn)        // => [ { NAME: 'Daffy Duck', AGE: '24' }, { NAME: 'Bugs 邦妮', AGE: '22' } ]    })    .catch((err) => {        console.log(err)    })let ltdtOut = [{ name: '大福 Duck', value: 2.4 }, { name: 'Bugs 邦妮', value: '2.2' }]let fpOut = './g-test-out.csv'wdc.writeCsv(fpOut, ltdtOut)    .then((res) => {        console.log(res)        // => finish    })    .catch((err) => {        console.log(err)    })</code></pre>
 
@@ -196,7 +206,7 @@
 
     
 
-    <h4 class="name" id="readCsv"><span class="type-signature">(async) </span>readCsv<span class="signature">(fp)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    <h4 class="name" id="readCsv"><span class="type-signature type-signature-async">(async) </span>readCsv<span class="signature">(fp)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
 
     
 
@@ -204,6 +214,10 @@
 
 
 <dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>讀取CSV檔，自動清除BOM</p></li></ul></dd>
+    
 
     
     <dt class="tag-source">Source:</dt>
@@ -247,26 +261,20 @@
 
 
 
-<div class="description usertext">
-    <p>讀取CSV檔，自動清除BOM</p>
-</div>
 
 
 
 
 
 
-
-
-
-    <h5>Example</h5>
+    <h5 class="h5-examples">Example</h5>
     
     <pre class="prettyprint"><code>import wdc from './src/WDataCsv.mjs'let fp = './g-test-in.csv'wdc.readCsv(fp)    .then((ltdt) => {        console.log(ltdt)        // => [ { NAME: 'Daffy Duck', AGE: '24' }, { NAME: 'Bugs 邦妮', AGE: '22' } ]    })    .catch((err) => {        console.log(err)    })</code></pre>
 
 
 
 
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -300,6 +308,7 @@
 <span class="param-type">String</span>
 
 
+
             
             </td>
 
@@ -329,7 +338,7 @@
 
 
 
-<h5>Returns:</h5>
+<h5 class="h5-returns">Returns:</h5>
 
         
 <div class="param-desc">
@@ -347,6 +356,7 @@
 <span class="param-type">Promise</span>
 
 
+
     </dd>
 </dl>
 
@@ -359,7 +369,7 @@
 
     
 
-    <h4 class="name" id="writeCsv"><span class="type-signature">(async) </span>writeCsv<span class="signature">(fp, data, opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    <h4 class="name" id="writeCsv"><span class="type-signature type-signature-async">(async) </span>writeCsv<span class="signature">(fp, data, opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
 
     
 
@@ -367,6 +377,10 @@
 
 
 <dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>輸出數據至CSV檔案</p></li></ul></dd>
+    
 
     
     <dt class="tag-source">Source:</dt>
@@ -410,26 +424,20 @@
 
 
 
-<div class="description usertext">
-    <p>輸出數據至CSV檔案</p>
-</div>
 
 
 
 
 
 
-
-
-
-    <h5>Example</h5>
+    <h5 class="h5-examples">Example</h5>
     
     <pre class="prettyprint"><code>import wdc from './src/WDataCsv.mjs'let ltdt = [{ name: '大福 Duck', value: 2.4 }, { name: 'Bugs 邦妮', value: '2.2' }]let fp = './g-test-out.csv'wdc.writeCsv(fp, ltdt)    .then((res) => {        console.log(res)        // => finish    })    .catch((err) => {        console.log(err)    })</code></pre>
 
 
 
 
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -467,6 +475,7 @@
 <span class="param-type">String</span>
 
 
+
             
             </td>
 
@@ -502,6 +511,7 @@
 <span class="param-type">Array</span>
 
 
+
             
             </td>
 
@@ -535,6 +545,7 @@
             
                 
 <span class="param-type">Object</span>
+
 
 
             
@@ -599,6 +610,7 @@
 <span class="param-type">String</span>
 
 
+
             
             </td>
 
@@ -638,6 +650,7 @@
 <span class="param-type">Array</span>
 
 
+
             
             </td>
 
@@ -675,6 +688,7 @@
             
                 
 <span class="param-type">Object</span>
+
 
 
             
@@ -729,7 +743,7 @@
 
 
 
-<h5>Returns:</h5>
+<h5 class="h5-returns">Returns:</h5>
 
         
 <div class="param-desc">
@@ -745,6 +759,7 @@
     <dd>
         
 <span class="param-type">Promise</span>
+
 
 
     </dd>
@@ -774,7 +789,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.10</a> on Thu Jan 19 2023 12:16:59 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.2</a> on Wed Mar 29 2023 12:18:08 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
