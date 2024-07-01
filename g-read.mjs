@@ -1,8 +1,20 @@
+import fs from 'fs'
 import wdc from './src/WDataCsv.mjs'
 
 
 let fp = './g-test-in.csv'
-wdc.readCsv(fp)
+
+await wdc.readCsv(fp)
+    .then((ltdt) => {
+        console.log(ltdt)
+        // => [ { NAME: 'Daffy Duck', AGE: '24' }, { NAME: 'Bugs 邦妮', AGE: '22' } ]
+    })
+    .catch((err) => {
+        console.log(err)
+    })
+
+let c = fs.readFileSync(fp, 'utf8')
+await wdc.readCsv(c)
     .then((ltdt) => {
         console.log(ltdt)
         // => [ { NAME: 'Daffy Duck', AGE: '24' }, { NAME: 'Bugs 邦妮', AGE: '22' } ]
@@ -12,4 +24,4 @@ wdc.readCsv(fp)
     })
 
 
-//node --experimental-modules --es-module-specifier-resolution=node g-read.mjs
+//node --experimental-modules g-read.mjs

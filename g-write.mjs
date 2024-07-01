@@ -13,4 +13,4 @@ wdc.writeCsv(fp, ltdt)
     })
 
 
-//node --experimental-modules --es-module-specifier-resolution=node g-write.mjs
+//node --experimental-modules g-write.mjs

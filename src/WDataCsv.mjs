@@ -1,7 +1,10 @@
+import { Readable } from 'stream'
 import fs from 'fs'
 import csvParse from 'csv-parser'
 import stripBom from 'strip-bom-stream'
 import get from 'lodash-es/get.js'
+import fsIsFile from 'wsemi/src/fsIsFile.mjs'
+import isestr from 'wsemi/src/isestr.mjs'
 import genPm from 'wsemi/src/genPm.mjs'
 import ltdtkeysheads2mat from 'wsemi/src/ltdtkeysheads2mat.mjs'
 import getCsvStrFromData from 'wsemi/src/getCsvStrFromData.mjs'
@@ -27,22 +30,41 @@ import getCsvStrFromData from 'wsemi/src/getCsvStrFromData.mjs'
  *     })
  *
  */
-async function readCsv(fp) {
+async function readCsv(inp) {
     let res = []
     let pm = genPm()
-    fs.createReadStream(fp)
-        .pipe(stripBom())
-        .pipe(csvParse())
-        .on('data', (data) => {
-            // console.log('data', data)
-            res.push(data)
-        })
-        .on('end', () => {
-            pm.resolve(res)
-        })
-        .on('error', (err) => {
-            pm.reject(err)
-        })
+    if (fsIsFile(inp)) {
+        fs.createReadStream(inp)
+            .pipe(stripBom())
+            .pipe(csvParse())
+            .on('data', (chunk) => {
+                // console.log('data', chunk)
+                res.push(chunk)
+            })
+            .on('end', () => {
+                pm.resolve(res)
+            })
+            .on('error', (err) => {
+                pm.reject(err)
+            })
+    }
+    else if (isestr(inp)) {
+        Readable.from([inp])
+            .pipe(csvParse())
+            .on('data', (chunk) => {
+                // console.log('data', chunk)
+                res.push(chunk)
+            })
+            .on('end', () => {
+                pm.resolve(res)
+            })
+            .on('error', (err) => {
+                pm.reject(err)
+            })
+    }
+    else {
+        return pm.reject(`inp is not a file or a string`)
+    }
     return pm
 }
 
