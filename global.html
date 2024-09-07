@@ -29,7 +29,7 @@
 <nav >
     
     
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#WDataCsv">WDataCsv</a></li><li><a href="global.html#readCsv">readCsv</a></li><li><a href="global.html#writeCsv">writeCsv</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#WDataCsv">WDataCsv</a></li><li><a href="global.html#parseCsv">parseCsv</a></li><li><a href="global.html#readCsv">readCsv</a></li><li><a href="global.html#writeCsv">writeCsv</a></li></ul>
     
 </nav>
 
@@ -140,7 +140,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="WDataCsv.mjs.html">WDataCsv.mjs</a>, <a href="WDataCsv.mjs.html#line189">line 189</a>
+        <a href="WDataCsv.mjs.html">WDataCsv.mjs</a>, <a href="WDataCsv.mjs.html#line231">line 231</a>
     </li></ul></dd>
     
 
@@ -206,7 +206,7 @@
 
     
 
-    <h4 class="name" id="readCsv"><span class="type-signature type-signature-async">(async) </span>readCsv<span class="signature">(fp)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    <h4 class="name" id="parseCsv"><span class="type-signature type-signature-async">(async) </span>parseCsv<span class="signature">(c)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
 
     
 
@@ -216,13 +216,13 @@
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>讀取CSV檔，自動清除BOM</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>解析CSV字串</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="WDataCsv.mjs.html">WDataCsv.mjs</a>, <a href="WDataCsv.mjs.html#line33">line 33</a>
+        <a href="WDataCsv.mjs.html">WDataCsv.mjs</a>, <a href="WDataCsv.mjs.html#line36">line 36</a>
     </li></ul></dd>
     
 
@@ -269,7 +269,170 @@
 
     <h5 class="h5-examples">Example</h5>
     
-    <pre class="prettyprint"><code>import wdc from './src/WDataCsv.mjs'let fp = './g-test-in.csv'wdc.readCsv(fp)    .then((ltdt) => {        console.log(ltdt)        // => [ { NAME: 'Daffy Duck', AGE: '24' }, { NAME: 'Bugs 邦妮', AGE: '22' } ]    })    .catch((err) => {        console.log(err)    })</code></pre>
+    <pre class="prettyprint"><code>import wdc from './src/WDataCsv.mjs'let fp = './g-test-in.csv'let c = fs.readFileSync(fp, 'utf8')await wdc.parseCsv(c)    .then((ltdt) => {        console.log(ltdt)        // => [ { NAME: 'Daffy Duck', AGE: '24' }, { NAME: 'Bugs 邦妮', AGE: '22' } ]    })    .catch((err) => {        console.log(err)    })</code></pre>
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>c</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>輸入CSV字串</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>回傳Promise，resolve回傳ltdt(各數據列為物件陣列)，reject回傳錯誤訊息</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="readCsv"><span class="type-signature type-signature-async">(async) </span>readCsv<span class="signature">(fp)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>讀取CSV檔，自動清除BOM</p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="WDataCsv.mjs.html">WDataCsv.mjs</a>, <a href="WDataCsv.mjs.html#line84">line 84</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-examples">Example</h5>
+    
+    <pre class="prettyprint"><code>import wdc from './src/WDataCsv.mjs'let fp = './g-test-in.csv'wdc.readCsv(fp)    .then((ltdt) => {        console.log(ltdt)        // => [ { NAME: 'Daffy Duck', AGE: '24' }, { NAME: 'Bugs 邦妮', AGE: '22' } ]    })    .catch((err) => {        console.log(err)    })</code></pre>
 
 
 
@@ -385,7 +548,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="WDataCsv.mjs.html">WDataCsv.mjs</a>, <a href="WDataCsv.mjs.html#line98">line 98</a>
+        <a href="WDataCsv.mjs.html">WDataCsv.mjs</a>, <a href="WDataCsv.mjs.html#line140">line 140</a>
     </li></ul></dd>
     
 
@@ -432,7 +595,7 @@
 
     <h5 class="h5-examples">Example</h5>
     
-    <pre class="prettyprint"><code>import wdc from './src/WDataCsv.mjs'let ltdt = [{ name: '大福 Duck', value: 2.4 }, { name: 'Bugs 邦妮', value: '2.2' }]let fp = './g-test-out.csv'wdc.writeCsv(fp, ltdt)    .then((res) => {        console.log(res)        // => finish    })    .catch((err) => {        console.log(err)    })</code></pre>
+    <pre class="prettyprint"><code>import wdc from './src/WDataCsv.mjs'let ltdt = [{ name: '大福 Duck', value: 2.4 }, { name: 'Bugs 邦妮', value: '2.2' }]let fp = './g-test-out.csv'wdc.writeCsv(fp, ltdt)    .then((res) => {        console.log(res)        // => finish    })    .catch((err) => {        console.log(err)    })</code></pre>
 
 
 
@@ -789,7 +952,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.2</a> on Mon Jul 01 2024 10:25:02 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.2</a> on Sat Sep 07 2024 16:02:34 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
