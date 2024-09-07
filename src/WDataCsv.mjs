@@ -40,7 +40,7 @@ async function parseCsv(inp) {
 
     //check
     if (!isestr(inp)) {
-        return pm.reject(`inp is not an effective string`)
+        return Promise.reject(`inp is not an effective string`)
     }
 
     Readable.from([inp])
@@ -88,7 +88,7 @@ async function readCsv(fp) {
 
     //check
     if (!fsIsFile(fp)) {
-        return pm.reject(`fp[${fp}] is not exist`)
+        return Promise.reject(`fp[${fp}] is not exist`)
     }
 
     fs.createReadStream(fp)
