@@ -11,6 +11,56 @@ import getCsvStrFromData from 'wsemi/src/getCsvStrFromData.mjs'
 
 
 /**
+ * 解析CSV字串
+ *
+ * @param {String} c 輸入CSV字串
+ * @return {Promise} 回傳Promise，resolve回傳ltdt(各數據列為物件陣列)，reject回傳錯誤訊息
+ * @example
+ *
+ * import wdc from './src/WDataCsv.mjs'
+ *
+ * let fp = './g-test-in.csv'
+ *
+ * let c = fs.readFileSync(fp, 'utf8')
+ *
+ * await wdc.parseCsv(c)
+ *     .then((ltdt) => {
+ *         console.log(ltdt)
+ *         // => [ { NAME: 'Daffy Duck', AGE: '24' }, { NAME: 'Bugs 邦妮', AGE: '22' } ]
+ *     })
+ *     .catch((err) => {
+ *         console.log(err)
+ *     })
+ *
+ */
+async function parseCsv(inp) {
+    let res = []
+
+    let pm = genPm()
+
+    //check
+    if (!isestr(inp)) {
+        return pm.reject(`inp is not an effective string`)
+    }
+
+    Readable.from([inp])
+        .pipe(csvParse())
+        .on('data', (chunk) => {
+            // console.log('data', chunk)
+            res.push(chunk)
+        })
+        .on('end', () => {
+            pm.resolve(res)
+        })
+        .on('error', (err) => {
+            pm.reject(err)
+        })
+
+    return pm
+}
+
+
+/**
  * 讀取CSV檔，自動清除BOM
  *
  * @param {String} fp 輸入檔案位置字串
@@ -20,6 +70,7 @@ import getCsvStrFromData from 'wsemi/src/getCsvStrFromData.mjs'
  * import wdc from './src/WDataCsv.mjs'
  *
  * let fp = './g-test-in.csv'
+ *
  * wdc.readCsv(fp)
  *     .then((ltdt) => {
  *         console.log(ltdt)
@@ -30,41 +81,30 @@ import getCsvStrFromData from 'wsemi/src/getCsvStrFromData.mjs'
  *     })
  *
  */
-async function readCsv(inp) {
+async function readCsv(fp) {
     let res = []
+
     let pm = genPm()
-    if (fsIsFile(inp)) {
-        fs.createReadStream(inp)
-            .pipe(stripBom())
-            .pipe(csvParse())
-            .on('data', (chunk) => {
-                // console.log('data', chunk)
-                res.push(chunk)
-            })
-            .on('end', () => {
-                pm.resolve(res)
-            })
-            .on('error', (err) => {
-                pm.reject(err)
-            })
+
+    //check
+    if (!fsIsFile(fp)) {
+        return pm.reject(`fp[${fp}] is not exist`)
     }
-    else if (isestr(inp)) {
-        Readable.from([inp])
-            .pipe(csvParse())
-            .on('data', (chunk) => {
-                // console.log('data', chunk)
-                res.push(chunk)
-            })
-            .on('end', () => {
-                pm.resolve(res)
-            })
-            .on('error', (err) => {
-                pm.reject(err)
-            })
-    }
-    else {
-        return pm.reject(`inp is not a file or a string`)
-    }
+
+    fs.createReadStream(fp)
+        .pipe(stripBom())
+        .pipe(csvParse())
+        .on('data', (chunk) => {
+            // console.log('data', chunk)
+            res.push(chunk)
+        })
+        .on('end', () => {
+            pm.resolve(res)
+        })
+        .on('error', (err) => {
+            pm.reject(err)
+        })
+
     return pm
 }
 
@@ -84,7 +124,9 @@ async function readCsv(inp) {
  * import wdc from './src/WDataCsv.mjs'
  *
  * let ltdt = [{ name: '大福 Duck', value: 2.4 }, { name: 'Bugs 邦妮', value: '2.2' }]
+ *
  * let fp = './g-test-out.csv'
+ *
  * wdc.writeCsv(fp, ltdt)
  *     .then((res) => {
  *         console.log(res)
@@ -187,6 +229,7 @@ async function writeCsv(fp, data, opt = {}) {
  *
  */
 let WDataCsv = {
+    parseCsv,
     readCsv,
     writeCsv,
 }

@@ -4,7 +4,9 @@ import wdc from './src/WDataCsv.mjs'
 
 let fp = './g-test-in.csv'
 
-await wdc.readCsv(fp)
+let c = fs.readFileSync(fp, 'utf8')
+
+await wdc.parseCsv(c)
     .then((ltdt) => {
         console.log(ltdt)
         // => [ { NAME: 'Daffy Duck', AGE: '24' }, { NAME: 'Bugs 邦妮', AGE: '22' } ]
@@ -14,4 +16,4 @@ await wdc.readCsv(fp)
     })
 
 
-//node --experimental-modules g-read.mjs
+//node --experimental-modules g-parse.mjs
