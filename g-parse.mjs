@@ -16,4 +16,4 @@ await wdc.parseCsv(c)
     })
 
 
-//node --experimental-modules g-parse.mjs
+//node g-parse.mjs

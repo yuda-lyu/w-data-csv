@@ -14,4 +14,4 @@ await wdc.readCsv(fp)
     })
 
 
-//node --experimental-modules g-read.mjs
+//node g-read.mjs

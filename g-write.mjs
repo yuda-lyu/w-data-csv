@@ -15,4 +15,4 @@ wdc.writeCsv(fp, ltdt)
     })
 
 
-//node --experimental-modules g-write.mjs
+//node g-write.mjs

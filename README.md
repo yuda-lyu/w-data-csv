@@ -13,7 +13,6 @@ To view documentation or get support, visit [docs](https://yuda-lyu.github.io/w-
 
 ## Installation
 ### Using npm(ES6 module):
-> **Note:** w-data-csv is mainly dependent on `csv-parser` and `strip-bom-stream`.
 ```alias
 npm i w-data-csv
 ```
