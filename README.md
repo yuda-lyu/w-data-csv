@@ -12,6 +12,7 @@ A tool for csv data.
 To view documentation or get support, visit [docs](https://yuda-lyu.github.io/w-data-csv/global.html).
 
 ## Installation
+
 ### Using npm(ES6 module):
 ```alias
 npm i w-data-csv
