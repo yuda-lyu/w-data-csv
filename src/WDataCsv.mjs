@@ -5,9 +5,12 @@ import stripBom from 'strip-bom-stream'
 import get from 'lodash-es/get.js'
 import fsIsFile from 'wsemi/src/fsIsFile.mjs'
 import isestr from 'wsemi/src/isestr.mjs'
+import isstr from 'wsemi/src/isstr.mjs'
+import isbol from 'wsemi/src/isbol.mjs'
+import replace from 'wsemi/src/replace.mjs'
+import cstr from 'wsemi/src/cstr.mjs'
 import genPm from 'wsemi/src/genPm.mjs'
 import ltdtkeysheads2mat from 'wsemi/src/ltdtkeysheads2mat.mjs'
-import getCsvStrFromData from 'wsemi/src/getCsvStrFromData.mjs'
 
 
 /**
@@ -53,6 +56,7 @@ async function parseCsv(inp) {
             pm.resolve(res)
         })
         .on('error', (err) => {
+            console.log(err)
             pm.reject(err)
         })
 
@@ -102,6 +106,7 @@ async function readCsv(fp) {
             pm.resolve(res)
         })
         .on('error', (err) => {
+            console.log(err)
             pm.reject(err)
         })
 
@@ -118,6 +123,7 @@ async function readCsv(fp) {
  * @param {String} [opt.mode='ltdt'] 輸入數據格式字串，可選ltdt或mat，預設ltdt
  * @param {Array} [opt.keys=[]] 輸入指定欲輸出鍵值陣列，預設[]
  * @param {Object} [opt.kphead={}] 輸入指定鍵值轉換物件，預設{}
+ * @param {Boolean} [opt.bom=true] 輸入是否添加開頭BOM符號，預設true
  * @return {Promise} 回傳Promise，resolve回傳成功訊息，reject回傳錯誤訊息
  * @example
  *
@@ -138,15 +144,16 @@ async function readCsv(fp) {
  *
  */
 async function writeCsv(fp, data, opt = {}) {
-    let err = null
     let mat
-    let c = ''
 
     //mode
     let mode = get(opt, 'mode')
     if (mode !== 'ltdt' && mode !== 'mat') {
         mode = 'ltdt'
     }
+
+    //bom
+    let bom = get(opt, 'bom', true)
 
     if (mode === 'mat') {
 
@@ -170,31 +177,72 @@ async function writeCsv(fp, data, opt = {}) {
             mat = ltdtkeysheads2mat(ltdt, keys, kphead)
 
         }
-        catch (e) {
-            err = e.toString()
-            return Promise.reject(err)
+        catch (err) {
+            console.log(err)
+            return Promise.reject(err.toString())
         }
     }
 
-    //getCsvStrFromData
-    try {
-        c = getCsvStrFromData(mat)
-    }
-    catch (e) {
-        err = e.toString()
-        return Promise.reject(err)
+    //stream寫入: 逐row編碼後write, 撞backpressure時等drain,
+    //避免在記憶體組出整段CSV字串撞V8 MAX_STRING_LENGTH (~512 MB)
+    let pm = genPm()
+    let ws = fs.createWriteStream(fp, { encoding: 'utf8' })
+    ws.on('error', (err) => {
+        console.log(err)
+        pm.reject(err.toString())
+    })
+    ws.on('finish', () => {
+        pm.resolve('finish')
+    })
+
+    let core = async () => {
+
+        //BOM
+        if (bom) {
+            if (!ws.write('﻿')) {
+                await new Promise((r) => {
+                    ws.once('drain', r)
+                })
+            }
+        }
+
+        //rows (escape邏輯與原getCsvStrFromData內getCsv一致, 維持byte-for-byte相容)
+        for (let row of mat) {
+            let cr = []
+            for (let value of row) {
+                if (isstr(value)) {
+                    value = replace(value, '\r\n', '')
+                    value = replace(value, '\r', '')
+                    value = replace(value, '\n', '')
+                    value = `"${value}"`
+                }
+                else if (isbol(value)) {
+                    value = value ? 'true' : 'false'
+                }
+                else {
+                    value = cstr(value)
+                }
+                cr.push(value)
+            }
+            let line = cr.join(',') + '\r\n'
+            if (!ws.write(line)) {
+                await new Promise((r) => {
+                    ws.once('drain', r)
+                })
+            }
+        }
+
+        ws.end()
     }
 
-    //writeFileSync
-    try {
-        fs.writeFileSync(fp, c, 'utf8')
-    }
-    catch (e) {
-        err = e.toString()
-        return Promise.reject(err)
-    }
+    core()
+        .catch((err) => {
+            console.log(err)
+            ws.destroy()
+            pm.reject(err.toString())
+        })
 
-    return 'finish'
+    return pm
 }
 
 
