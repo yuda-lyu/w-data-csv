@@ -1,15 +1,15 @@
 {
   "name": "w-data-csv",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "main": "dist/w-data-csv.umd.js",
   "dependencies": {
     "csv-parser": "^3.2.1",
     "lodash-es": "^4.18.1",
     "strip-bom-stream": "^5.0.0",
-    "wsemi": "^1.8.54"
+    "wsemi": "^1.8.66"
   },
   "devDependencies": {
-    "w-package-tools": "^1.1.7"
+    "w-package-tools": "^1.1.11"
   },
   "scripts": {
     "test": "mocha --parallel --timeout 60000",
