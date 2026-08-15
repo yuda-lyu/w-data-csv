@@ -140,7 +140,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="WDataCsv.mjs.html">WDataCsv.mjs</a>, <a href="WDataCsv.mjs.html#line279">line 279</a>
+        <a href="WDataCsv.mjs.html">WDataCsv.mjs</a>, <a href="WDataCsv.mjs.html#line363">line 363</a>
     </li></ul></dd>
     
 
@@ -206,7 +206,7 @@
 
     
 
-    <h4 class="name" id="parseCsv"><span class="type-signature type-signature-async">(async) </span>parseCsv<span class="signature">(c)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    <h4 class="name" id="parseCsv"><span class="type-signature type-signature-async">(async) </span>parseCsv<span class="signature">(inp, opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
 
     
 
@@ -222,7 +222,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="WDataCsv.mjs.html">WDataCsv.mjs</a>, <a href="WDataCsv.mjs.html#line39">line 39</a>
+        <a href="WDataCsv.mjs.html">WDataCsv.mjs</a>, <a href="WDataCsv.mjs.html#line128">line 128</a>
     </li></ul></dd>
     
 
@@ -269,7 +269,7 @@
 
     <h5 class="h5-examples">Example</h5>
     
-    <pre class="prettyprint"><code>import wdc from './src/WDataCsv.mjs'let fp = './g-test-in.csv'let c = fs.readFileSync(fp, 'utf8')await wdc.parseCsv(c)    .then((ltdt) => {        console.log(ltdt)        // => [ { NAME: 'Daffy Duck', AGE: '24' }, { NAME: 'Bugs 邦妮', AGE: '22' } ]    })    .catch((err) => {        console.log(err)    })</code></pre>
+    <pre class="prettyprint"><code>import wdc from './src/WDataCsv.mjs'let fp = './g-test-in.csv'let c = fs.readFileSync(fp, 'utf8')await wdc.parseCsv(c)    .then((ltdt) => {        console.log(ltdt)        // => [ { NAME: 'Daffy Duck', AGE: '24' }, { NAME: 'Bugs 邦妮', AGE: '22' } ]    })    .catch((err) => {        console.log(err)    })await wdc.parseCsv(c, { mode: 'mat' })    .then((mat) => {        console.log(mat)        // => [ [ 'NAME', 'AGE' ], [ 'Daffy Duck', '24' ], [ 'Bugs 邦妮', '22' ] ]    })    .catch((err) => {        console.log(err)    })</code></pre>
 
 
 
@@ -287,7 +287,11 @@
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
+        
+        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -299,7 +303,7 @@
 
         <tr>
             
-                <td class="name"><code>c</code></td>
+                <td class="name"><code>inp</code></td>
             
 
             <td class="type">
@@ -313,10 +317,556 @@
             </td>
 
             
+                <td class="attributes">
+                
 
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
             
 
             <td class="description last"><p>輸入CSV字串</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>{}</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入設定物件，預設{}</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>mode</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>'ltdt'</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入回傳數據格式字串，可選ltdt(各數據列為物件)或mat(各數據列為陣列)，預設ltdt</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>headers</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+|
+
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入標頭設定，給false代表無標頭列，給陣列代表無標頭列且以此陣列為欄名，不給則取第1列為標頭。因csv-parser於給true時會使各列成為_0,_1等溢出鍵之壞數據，故給true時視為不給。另mode為mat時本設定固定為false</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>skipLines</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入解析前跳過列數整數。因csv-parser之註解列不計入行號，故與skipComments併用時計數基準會位移，兩者不建議同時使用</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>skipComments</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入忽略註解列設定，給true代表跳過#開頭之列，給字串代表以該字元為註解符</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>separator</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入欄位分隔字元，因csv-parser僅取首個byte，故須為單字元</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>quote</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入引號字元，因csv-parser僅取首個byte，故須為單字元</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>escape</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入逃逸字元，因csv-parser僅取首個byte，故須為單字元</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>newline</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入行尾字元，因csv-parser僅取首個byte，故須為單字元</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>strict</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入各列欄數是否須與標頭數相符布林值。因csv-parser於headers為false時會強制關閉本設定，故mode為mat時本設定無效</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>mapHeaders</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入標頭轉換函式。因csv-parser僅於解析標頭列時呼叫，故mode為mat時不會被呼叫。另回傳null時該欄將被整欄丟棄</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>mapValues</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入欄值轉換函式。mode為mat時其header參數恆為undefined</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>maxRowBytes</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入單列位元組數上限整數</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
         </tr>
 
     
@@ -342,7 +892,7 @@
 
         
 <div class="param-desc">
-    <p>回傳Promise，resolve回傳ltdt(各數據列為物件陣列)，reject回傳錯誤訊息</p>
+    <p>回傳Promise，resolve回傳ltdt(各數據列為物件陣列)或mat(二維陣列)，reject回傳錯誤訊息</p>
 </div>
 
 
@@ -369,7 +919,7 @@
 
     
 
-    <h4 class="name" id="readCsv"><span class="type-signature type-signature-async">(async) </span>readCsv<span class="signature">(fp)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    <h4 class="name" id="readCsv"><span class="type-signature type-signature-async">(async) </span>readCsv<span class="signature">(fp, opt<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
 
     
 
@@ -385,7 +935,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="WDataCsv.mjs.html">WDataCsv.mjs</a>, <a href="WDataCsv.mjs.html#line88">line 88</a>
+        <a href="WDataCsv.mjs.html">WDataCsv.mjs</a>, <a href="WDataCsv.mjs.html#line186">line 186</a>
     </li></ul></dd>
     
 
@@ -432,7 +982,7 @@
 
     <h5 class="h5-examples">Example</h5>
     
-    <pre class="prettyprint"><code>import wdc from './src/WDataCsv.mjs'let fp = './g-test-in.csv'wdc.readCsv(fp)    .then((ltdt) => {        console.log(ltdt)        // => [ { NAME: 'Daffy Duck', AGE: '24' }, { NAME: 'Bugs 邦妮', AGE: '22' } ]    })    .catch((err) => {        console.log(err)    })</code></pre>
+    <pre class="prettyprint"><code>import wdc from './src/WDataCsv.mjs'let fp = './g-test-in.csv'wdc.readCsv(fp)    .then((ltdt) => {        console.log(ltdt)        // => [ { NAME: 'Daffy Duck', AGE: '24' }, { NAME: 'Bugs 邦妮', AGE: '22' } ]    })    .catch((err) => {        console.log(err)    })wdc.readCsv(fp, { mode: 'mat' })    .then((mat) => {        console.log(mat)        // => [ [ 'NAME', 'AGE' ], [ 'Daffy Duck', '24' ], [ 'Bugs 邦妮', '22' ] ]    })    .catch((err) => {        console.log(err)    })</code></pre>
 
 
 
@@ -450,7 +1000,11 @@
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
+        
+        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -476,10 +1030,556 @@
             </td>
 
             
+                <td class="attributes">
+                
 
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
             
 
             <td class="description last"><p>輸入檔案位置字串</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>{}</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入設定物件，預設{}</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>mode</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>'ltdt'</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入回傳數據格式字串，可選ltdt(各數據列為物件)或mat(各數據列為陣列)，預設ltdt</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>headers</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+|
+
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入標頭設定，給false代表無標頭列，給陣列代表無標頭列且以此陣列為欄名，不給則取第1列為標頭。因csv-parser於給true時會使各列成為_0,_1等溢出鍵之壞數據，故給true時視為不給。另mode為mat時本設定固定為false</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>skipLines</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入解析前跳過列數整數。因csv-parser之註解列不計入行號，故與skipComments併用時計數基準會位移，兩者不建議同時使用</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>skipComments</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+|
+
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入忽略註解列設定，給true代表跳過#開頭之列，給字串代表以該字元為註解符</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>separator</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入欄位分隔字元，因csv-parser僅取首個byte，故須為單字元</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>quote</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入引號字元，因csv-parser僅取首個byte，故須為單字元</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>escape</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入逃逸字元，因csv-parser僅取首個byte，故須為單字元</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>newline</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入行尾字元，因csv-parser僅取首個byte，故須為單字元</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>strict</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入各列欄數是否須與標頭數相符布林值。因csv-parser於headers為false時會強制關閉本設定，故mode為mat時本設定無效</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>mapHeaders</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入標頭轉換函式。因csv-parser僅於解析標頭列時呼叫，故mode為mat時不會被呼叫。另回傳null時該欄將被整欄丟棄</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>mapValues</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入欄值轉換函式。mode為mat時其header參數恆為undefined</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>maxRowBytes</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>輸入單列位元組數上限整數</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
         </tr>
 
     
@@ -505,7 +1605,7 @@
 
         
 <div class="param-desc">
-    <p>回傳Promise，resolve回傳ltdt(各數據列為物件陣列)，reject回傳錯誤訊息</p>
+    <p>回傳Promise，resolve回傳ltdt(各數據列為物件陣列)或mat(二維陣列)，reject回傳錯誤訊息</p>
 </div>
 
 
@@ -548,7 +1648,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="WDataCsv.mjs.html">WDataCsv.mjs</a>, <a href="WDataCsv.mjs.html#line146">line 146</a>
+        <a href="WDataCsv.mjs.html">WDataCsv.mjs</a>, <a href="WDataCsv.mjs.html#line230">line 230</a>
     </li></ul></dd>
     
 
@@ -992,7 +2092,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sat Aug 08 2026 14:44:43 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sat Aug 15 2026 17:02:41 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>

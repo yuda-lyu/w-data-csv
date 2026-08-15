@@ -1,6 +1,6 @@
 {
   "name": "w-data-csv",
-  "version": "1.0.20",
+  "version": "1.0.21",
   "main": "dist/w-data-csv.umd.js",
   "dependencies": {
     "csv-parser": "^3.2.1",
