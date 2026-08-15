@@ -45,12 +45,14 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import { Readable } from 'stream'
+            <pre class="prettyprint source linenums"><code>import { Readable, Writable } from 'stream'
+import { pipeline } from 'stream/promises'
 import fs from 'fs'
 import csvParse from 'csv-parser'
 import stripBom from 'strip-bom-stream'
 import get from 'lodash-es/get.js'
 import fsIsFile from 'wsemi/src/fsIsFile.mjs'
+import haskey from 'wsemi/src/haskey.mjs'
 import isestr from 'wsemi/src/isestr.mjs'
 import isstr from 'wsemi/src/isstr.mjs'
 import isbol from 'wsemi/src/isbol.mjs'
@@ -60,11 +62,89 @@ import genPm from 'wsemi/src/genPm.mjs'
 import ltdtkeysheads2mat from 'wsemi/src/ltdtkeysheads2mat.mjs'
 
 
+//csv-parser可透傳之選項
+//排除raw(其值回傳Buffer, 破壞ltdt與mat之字串契約)與outputByteOffset(其改變回傳形狀為{row,byteOffset})
+let ksOptCsvParse = [
+    'headers', 'skipLines', 'skipComments', 'separator', 'quote',
+    'escape', 'newline', 'strict', 'mapHeaders', 'mapValues', 'maxRowBytes',
+]
+
+
+//genOptCsvParse, 自opt取出csv-parser可用選項, 未給者不傳入以維持csv-parser之預設
+let genOptCsvParse = (opt) => {
+
+    //mode
+    let mode = get(opt, 'mode')
+    if (mode !== 'ltdt' &amp;&amp; mode !== 'mat') {
+        mode = 'ltdt'
+    }
+
+    //透傳
+    let o = {}
+    for (let k of ksOptCsvParse) {
+        if (haskey(opt, k)) {
+            o[k] = opt[k]
+        }
+    }
+
+    //headers給true會使csv-parser之headers成為布林值, 各列鍵將全為_0,_1...之溢出鍵而成壞資料, 故一律視為未給
+    if (o.headers === true) {
+        delete o.headers
+    }
+
+    //mat模式固定關閉標頭, 否則第1列會被取為標頭
+    //且可避免headers給陣列時, 超出標頭數之欄位另生_N溢出鍵
+    if (mode === 'mat') {
+        o.headers = false
+    }
+
+    return { mode, optCsvParse: o }
+}
+
+
+//getRows, 以pipeline串接各段stream, 使來源與中段stream之錯誤皆能被捕獲
+let getRows = async (rs, opt) => {
+
+    let { mode, optCsvParse } = genOptCsvParse(opt)
+
+    let res = []
+
+    let ws = new Writable({
+        objectMode: true,
+        write(row, enc, cb) {
+
+            //mat模式時headers必為false, csv-parser依各列實際欄數自生0,1,2...之整數字串鍵,
+            //物件之整數字串鍵本就依數值升序排列, 故直接取值即為正確順序
+            res.push(mode === 'mat' ? Object.values(row) : row)
+
+            cb()
+        },
+    })
+
+    await pipeline(rs, stripBom(), csvParse(optCsvParse), ws)
+
+    return res
+}
+
+
 /**
  * 解析CSV字串
  *
- * @param {String} c 輸入CSV字串
- * @return {Promise} 回傳Promise，resolve回傳ltdt(各數據列為物件陣列)，reject回傳錯誤訊息
+ * @param {String} inp 輸入CSV字串
+ * @param {Object} [opt={}] 輸入設定物件，預設{}
+ * @param {String} [opt.mode='ltdt'] 輸入回傳數據格式字串，可選ltdt(各數據列為物件)或mat(各數據列為陣列)，預設ltdt
+ * @param {Boolean|Array} [opt.headers] 輸入標頭設定，給false代表無標頭列，給陣列代表無標頭列且以此陣列為欄名，不給則取第1列為標頭。因csv-parser於給true時會使各列成為_0,_1等溢出鍵之壞數據，故給true時視為不給。另mode為mat時本設定固定為false
+ * @param {Number} [opt.skipLines] 輸入解析前跳過列數整數。因csv-parser之註解列不計入行號，故與skipComments併用時計數基準會位移，兩者不建議同時使用
+ * @param {Boolean|String} [opt.skipComments] 輸入忽略註解列設定，給true代表跳過#開頭之列，給字串代表以該字元為註解符
+ * @param {String} [opt.separator] 輸入欄位分隔字元，因csv-parser僅取首個byte，故須為單字元
+ * @param {String} [opt.quote] 輸入引號字元，因csv-parser僅取首個byte，故須為單字元
+ * @param {String} [opt.escape] 輸入逃逸字元，因csv-parser僅取首個byte，故須為單字元
+ * @param {String} [opt.newline] 輸入行尾字元，因csv-parser僅取首個byte，故須為單字元
+ * @param {Boolean} [opt.strict] 輸入各列欄數是否須與標頭數相符布林值。因csv-parser於headers為false時會強制關閉本設定，故mode為mat時本設定無效
+ * @param {Function} [opt.mapHeaders] 輸入標頭轉換函式。因csv-parser僅於解析標頭列時呼叫，故mode為mat時不會被呼叫。另回傳null時該欄將被整欄丟棄
+ * @param {Function} [opt.mapValues] 輸入欄值轉換函式。mode為mat時其header參數恆為undefined
+ * @param {Number} [opt.maxRowBytes] 輸入單列位元組數上限整數
+ * @return {Promise} 回傳Promise，resolve回傳ltdt(各數據列為物件陣列)或mat(二維陣列)，reject回傳錯誤訊息
  * @example
  *
  * import wdc from './src/WDataCsv.mjs'
@@ -82,32 +162,28 @@ import ltdtkeysheads2mat from 'wsemi/src/ltdtkeysheads2mat.mjs'
  *         console.log(err)
  *     })
  *
+ * await wdc.parseCsv(c, { mode: 'mat' })
+ *     .then((mat) => {
+ *         console.log(mat)
+ *         // => [ [ 'NAME', 'AGE' ], [ 'Daffy Duck', '24' ], [ 'Bugs 邦妮', '22' ] ]
+ *     })
+ *     .catch((err) => {
+ *         console.log(err)
+ *     })
+ *
  */
-async function parseCsv(inp) {
-    let res = []
-
-    let pm = genPm()
+async function parseCsv(inp, opt = {}) {
 
     //check
     if (!isestr(inp)) {
         return Promise.reject(`inp is not an effective string`)
     }
 
-    Readable.from([inp])
-        .pipe(csvParse())
-        .on('data', (chunk) => {
-            // console.log('data', chunk)
-            res.push(chunk)
-        })
-        .on('end', () => {
-            pm.resolve(res)
-        })
-        .on('error', (err) => {
+    return getRows(Readable.from([inp]), opt)
+        .catch((err) => {
             console.log(err)
-            pm.reject(err)
+            return Promise.reject(err)
         })
-
-    return pm
 }
 
 
@@ -115,7 +191,20 @@ async function parseCsv(inp) {
  * 讀取CSV檔，自動清除BOM
  *
  * @param {String} fp 輸入檔案位置字串
- * @return {Promise} 回傳Promise，resolve回傳ltdt(各數據列為物件陣列)，reject回傳錯誤訊息
+ * @param {Object} [opt={}] 輸入設定物件，預設{}
+ * @param {String} [opt.mode='ltdt'] 輸入回傳數據格式字串，可選ltdt(各數據列為物件)或mat(各數據列為陣列)，預設ltdt
+ * @param {Boolean|Array} [opt.headers] 輸入標頭設定，給false代表無標頭列，給陣列代表無標頭列且以此陣列為欄名，不給則取第1列為標頭。因csv-parser於給true時會使各列成為_0,_1等溢出鍵之壞數據，故給true時視為不給。另mode為mat時本設定固定為false
+ * @param {Number} [opt.skipLines] 輸入解析前跳過列數整數。因csv-parser之註解列不計入行號，故與skipComments併用時計數基準會位移，兩者不建議同時使用
+ * @param {Boolean|String} [opt.skipComments] 輸入忽略註解列設定，給true代表跳過#開頭之列，給字串代表以該字元為註解符
+ * @param {String} [opt.separator] 輸入欄位分隔字元，因csv-parser僅取首個byte，故須為單字元
+ * @param {String} [opt.quote] 輸入引號字元，因csv-parser僅取首個byte，故須為單字元
+ * @param {String} [opt.escape] 輸入逃逸字元，因csv-parser僅取首個byte，故須為單字元
+ * @param {String} [opt.newline] 輸入行尾字元，因csv-parser僅取首個byte，故須為單字元
+ * @param {Boolean} [opt.strict] 輸入各列欄數是否須與標頭數相符布林值。因csv-parser於headers為false時會強制關閉本設定，故mode為mat時本設定無效
+ * @param {Function} [opt.mapHeaders] 輸入標頭轉換函式。因csv-parser僅於解析標頭列時呼叫，故mode為mat時不會被呼叫。另回傳null時該欄將被整欄丟棄
+ * @param {Function} [opt.mapValues] 輸入欄值轉換函式。mode為mat時其header參數恆為undefined
+ * @param {Number} [opt.maxRowBytes] 輸入單列位元組數上限整數
+ * @return {Promise} 回傳Promise，resolve回傳ltdt(各數據列為物件陣列)或mat(二維陣列)，reject回傳錯誤訊息
  * @example
  *
  * import wdc from './src/WDataCsv.mjs'
@@ -131,33 +220,28 @@ async function parseCsv(inp) {
  *         console.log(err)
  *     })
  *
+ * wdc.readCsv(fp, { mode: 'mat' })
+ *     .then((mat) => {
+ *         console.log(mat)
+ *         // => [ [ 'NAME', 'AGE' ], [ 'Daffy Duck', '24' ], [ 'Bugs 邦妮', '22' ] ]
+ *     })
+ *     .catch((err) => {
+ *         console.log(err)
+ *     })
+ *
  */
-async function readCsv(fp) {
-    let res = []
-
-    let pm = genPm()
+async function readCsv(fp, opt = {}) {
 
     //check
     if (!fsIsFile(fp)) {
         return Promise.reject(`fp[${fp}] is not exist`)
     }
 
-    fs.createReadStream(fp)
-        .pipe(stripBom())
-        .pipe(csvParse())
-        .on('data', (chunk) => {
-            // console.log('data', chunk)
-            res.push(chunk)
-        })
-        .on('end', () => {
-            pm.resolve(res)
-        })
-        .on('error', (err) => {
+    return getRows(fs.createReadStream(fp), opt)
+        .catch((err) => {
             console.log(err)
-            pm.reject(err)
+            return Promise.reject(err)
         })
-
-    return pm
 }
 
 
@@ -345,7 +429,7 @@ export default WDataCsv
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sat Aug 08 2026 14:44:43 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sat Aug 15 2026 17:02:41 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
