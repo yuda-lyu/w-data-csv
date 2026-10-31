@@ -1,11 +1,11 @@
 {
   "name": "w-data-csv",
-  "version": "1.0.40",
+  "version": "1.0.41",
   "main": "dist/w-data-csv.umd.js",
   "dependencies": {
     "csv-parser": "^3.2.1",
     "strip-bom-stream": "^5.0.0",
-    "wsemi": "^1.9.25"
+    "wsemi": "^1.9.36"
   },
   "devDependencies": {
     "w-package-tools": "^1.1.21"
